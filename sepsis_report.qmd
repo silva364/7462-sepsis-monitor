@@ -1,0 +1,51 @@
+---
+title: "Assigment8"
+author: "Luis Silva"
+format: html
+editor: visual
+---
+
+```{r}
+#| echo: false
+library(tidyverse)
+library(data.table) ## For the fread function
+library(lubridate)
+
+source("sepsis_monitor_functions.R")
+
+df <- initializePatients()
+```
+
+## Creating the file in the cloud
+
+```{r}
+#| echo: false
+
+library(googledrive)
+
+# We have to write the file to disk first, then upload it
+df %>% write_csv("sepsis_report_temp.csv")
+
+# Uploading happens here
+drive_put(media = "sepsis_report_temp.csv",  
+          path = "https://drive.google.com/drive/u/0/folders/1iWjSLj-GyV2uF4nuQfPxGwL4QW28HGAX",
+          name = "sepsis_report.csv")
+
+
+```
+
+## Reading in the csv file from Google Drive.
+
+```{r}
+
+sepsis <- drive_read_string("https://drive.google.com/file/d/127QEVRKab6yeNg-PqTcoCYM2yIAj8Z3z") %>%
+  read_csv()
+
+```
+
+## updatepatient function to update files
+
+```{r}
+updatePatients(sepsis)
+```
+
