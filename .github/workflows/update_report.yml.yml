@@ -1,0 +1,36 @@
+name: Update Sepsis Report
+
+on:
+  schedule:
+    - cron: '0 * * * *' # Run every hour
+  push:
+    branches:
+      - main
+
+jobs:
+  update_report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up R environment
+        uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: 4.1.2
+
+      - name: Install packages
+        run: |
+          install.packages("googledrive")
+          install.packages("dplyr")
+
+      - name: Update sepsis report
+        run: |
+          Rscript update_report.R
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v4
+        with:
+          author_name: "GitHub Actions Bot"
+          author_email: "<>"
+          message: "Updated sepsis report"
