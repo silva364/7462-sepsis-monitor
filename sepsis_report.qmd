@@ -13,7 +13,7 @@ library(lubridate)
 
 source("sepsis_monitor_functions.R")
 
-df <- initializePatients()
+df <- initializePatients() 
 ```
 
 ## Creating the file in the cloud
