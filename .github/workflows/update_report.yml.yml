@@ -1,11 +1,15 @@
-name: Update Sepsis Report
+on: [workflow_dispatch]
 
-on:
-  schedule:
-    - cron: '0 * * * *' # Run every hour
-  push:
-    branches:
-      - main
+# Un-comment the following lines (and comment out the first one) to make this a scheduled job
+#on:
+#  schedule:
+#    - cron:  '0 22 * * *'
+#  push:
+#    branches: main
+#  workflow_dispatch:
+
+name: Render Report
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
@@ -37,11 +41,6 @@ jobs:
                any::readr
                any::lubridate
                any::forcats
-               any::googledrive
-               
-      - name: Update sepsis report
-        run: |
-          Rscript update_report.R
 
       - name: Render document
         uses: quarto-dev/quarto-actions/render@v2
