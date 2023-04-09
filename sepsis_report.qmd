@@ -10,42 +10,246 @@ editor: visual
 library(tidyverse)
 library(data.table) ## For the fread function
 library(lubridate)
+library(tictoc)
+library(gt)
+library(dplyr)
+library(ggplot2)
 
 source("sepsis_monitor_functions.R")
 
-df <- initializePatients() 
+
 ```
 
+## Speed testing
+
+The function makeSepsisDataset in sepsis_monitor_functions.R creates a single data file with ICU monitoring information on n randomly sampled patients by reading in the data files for these n individuals from the web. The function has two arguments:
+
+n, which determines to number of patients to read in
+
+read_fn, which specifies whether the reading of individual patient files should use the function fread or read_delim.
+
+Use the tictoc package, write some code to compare the amount of time taken to create sepsis datasets with 50, 100, and 500 patients when using fread vs. read_delim.
+
+```{r}
+
+tic()
+makeSepsisDataset(50)
+toc()
+# 5.73 sec elapsed
+
+tic()
+makeSepsisDataset(100)
+toc()
+# 10.28 sec elapsed
+
+tic()
+makeSepsisDataset(200)
+toc()
+# 21.49 sec elapsed
+
+tic()
+makeSepsisDataset(500)
+toc()
+# 48.64 sec elapsed
+
+tictoc_times <- data.frame("Patients" = c("50", "100", "500"), "seconds" = c("5.73", "10.28", "48.64"))
+
+tictoc_times %>%
+  gt() %>%
+  tab_header(
+    title = md("Computing time of the **makeSepsisDataset** Function"),
+    subtitle = md("Time to fetch the described amount of patients")
+    ) %>% 
+  cols_align(
+    align = "center",
+    columns = vars("Patients", "seconds")) %>% 
+  opt_table_outline() %>%
+  opt_table_lines("all") %>%
+  opt_row_striping()
+  
+
+print(tictoc_times)
+```
+
+
+
+
 ## Creating the file in the cloud
+
+Now, you’re going to upload a CSV file of your sepsis dataset to Google Drive.
+
+Start by logging into your Google Drive account with your UMN credentials. Create a folder in My Drive called Sepsis (you can also make this folder somewhere else, or use an existing folder). Navigate to your folder, and click the sharing icon next to the folder name:
+
+At the bottom of the next window, change the Restricted status to Anyone with the link.
+
+Next, click Copy Link, paste it where indicated below and run the following code:
 
 ```{r}
 #| echo: false
 
 library(googledrive)
 
+# Selcting 100 patients
+df <- makeSepsisDataset(100) 
+
 # We have to write the file to disk first, then upload it
 df %>% write_csv("sepsis_report_temp.csv")
 
 # Uploading happens here
-drive_put(media = "sepsis_report_temp.csv",  
+sepsis_file <- drive_put(media = "sepsis_report_temp.csv",  
           path = "https://drive.google.com/drive/u/0/folders/1iWjSLj-GyV2uF4nuQfPxGwL4QW28HGAX",
           name = "sepsis_report.csv")
 
+# Set the file permissions so anyone can download this file.
+sepsis_file %>% drive_share_anyone()
+```
+
+## Report Starts here
+
+```{r}
+report_time <- Sys.time()
+now <- format(report_time, "%Y-%m-%d %H:%M:%S")
+message("Report Generated at", " ", print(now))
+```
+
+## Most recent status on patients with Sepsis
+
+```{r}
+sepsis_now <- df %>%
+  filter(SepsisLabel == "1") %>%
+  select(PatientID, HR, Resp, Temp) %>%
+  group_by(PatientID) %>%
+  summarise(
+    "Last Heart Rate" = last(HR),
+    "Last Temperature" = last(Temp),
+    "Last Respiratory Rate" = last (Resp)
+  ) %>%
+  ungroup () %>%
+  gt() %>%
+    tab_header(
+    title = md("Patients with Sepsis Now"),
+    subtitle = md("Last vital signs on record")
+    ) %>% 
+  opt_table_outline() %>%
+  opt_table_lines("all") %>%
+  opt_row_striping()
+
+print(sepsis_now)
+
 
 ```
 
-## Reading in the csv file from Google Drive.
+## Tracking vital signs of septic patients
 
 ```{r}
 
-sepsis <- drive_read_string("https://drive.google.com/file/d/127QEVRKab6yeNg-PqTcoCYM2yIAj8Z3z") %>%
-  read_csv()
+# Define custom color scale
+my_colors <- c("blue4", "yellow", "orange", "red")
+num_levels <- length(my_colors)
+
+sepsis_plot <- df %>%
+  filter(SepsisLabel == "1") %>%
+  select(PatientID, HR, Resp, Temp, obsTime) %>%
+  mutate(Resp = as.numeric(Resp)) %>%
+  mutate(RespRate = cut(Resp, 
+                            breaks = c(0, 10, 20, 30, Inf), 
+                            labels = c("0-10", "11-20", "21-30", ">40")))
+
+ggplot(sepsis_plot, aes(x=obsTime, y=HR)) +
+  geom_point(aes(color = Temp, shape = RespRate), size = 5, alpha = 0.7) +
+  scale_color_gradientn(colors = my_colors, limits = c(35, 43), 
+                        breaks = seq(35, 43, length.out = num_levels),
+                        na.value = "grey40") +
+  facet_wrap(. ~ PatientID, ncol = 3) +
+  theme_light() +
+  labs(color = "Temperature (C)",
+       shape = "Respiratory Rate",
+       title = "Last readings of septic patients",
+       y = "Heart Rate",
+       x = "Date") +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 ```
-
-## updatepatient function to update files
+## Change in Parameters
 
 ```{r}
-updatePatients(sepsis)
+sepsis_change <- df %>%
+  filter(SepsisLabel == "1") %>%
+  select(PatientID, HR, Resp, Temp, obsTime) %>%
+  group_by(PatientID) %>%
+  slice_head(n = 10) %>%
+  summarise(
+    lhr = first(na.omit(HR)),
+    shr = last(na.omit(HR)),
+    ltp = first(na.omit(Temp)),
+    stp = last(na.omit(Temp)),
+    lrr = first(na.omit(Resp)),
+    srr = last(na.omit(Resp))
+  ) %>%
+  mutate(
+    chr = lhr - shr,
+    thr = ltp - stp,
+    rhr = lrr - srr
+  )
+
+
+# Diverging Barcharts
+
+#Heart Rate
+hr <- ggplot(sepsis_change, aes(x=PatientID, y=chr, fill=ifelse(chr > 0, "Decrease", "Increase"))) + 
+  geom_bar(stat='identity', width=.5)  +
+  scale_fill_manual(name="Change", 
+                    labels = c("Increase", "Decrease"), 
+                    values = c("Decrease"="maroon4", "Increase"="plum")) + 
+  labs(subtitle="Change in last heart rate readings for patients with sepsis", 
+       title= "Heart Rate") + 
+  coord_flip() +
+  theme_minimal()
+
+print (hr)
+
+# Temperature
+temp <- ggplot(sepsis_change, aes(x=PatientID, y=thr, fill=ifelse(thr > 0, "Decrease", "Increase"))) + 
+  geom_bar(stat='identity', width=.5)  +
+  scale_fill_manual(name="Change", 
+                    labels = c("Increase", "Decrease"), 
+                    values = c("Decrease"="red3", "Increase"="green4")) + 
+  labs(subtitle="Change in last Temperature readings for patients with sepsis", 
+       title= "Temperature") + 
+  coord_flip() +
+  theme_minimal()
+
+print(temp)
+
+# Respiratory Rate
+rr <- ggplot(sepsis_change, aes(x=PatientID, y=rhr, fill=ifelse(rhr > 0, "Decrease", "Increase"))) + 
+  geom_bar(stat='identity', width=.5)  +
+  scale_fill_manual(name="Change", 
+                    labels = c("Increase", "Decrease"), 
+                    values = c("Decrease"="blue4", "Increase"="lightcyan4")) + 
+  labs(subtitle="Change in last Respiratory Rate readings for patients with sepsis", 
+       title= "Respiratory Rate") + 
+  coord_flip() +
+  theme_minimal()
+
+print (rr)
+```
+
+# Getting the data
+“Up-to-date” physiological data for your patients can be obtained by calling:
+
+```{r}
+## Calling drive_deauth() prevents R from trying to authenticate via a browser
+## This is needed to make the GitHub Action work
+drive_deauth()
+file_link <- "https://drive.google.com/drive/u/0/folders/1iWjSLj-GyV2uF4nuQfPxGwL4QW28HGAX"
+
+## All data up until now
+new_data <- updateData(file_link)
+
+## Include only most recent data
+most_recent_data <- new_data %>%
+  group_by(PatientID) %>%
+  filter(obsTime == max(obsTime))
 ```
 
