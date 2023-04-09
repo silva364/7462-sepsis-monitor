@@ -38,6 +38,10 @@ jobs:
                any::lubridate
                any::forcats
                any::googledrive
+               any::tidyverse
+               any::data.table
+               any::tictoc
+               any::gt
                
       - name: Update sepsis report
         run: |
