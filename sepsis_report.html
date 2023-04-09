@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.335">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Luis Silva">
+
+<title>Assigment8</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="sepsis_report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="sepsis_report_files/libs/quarto-html/quarto.js"></script>
+<script src="sepsis_report_files/libs/quarto-html/popper.min.js"></script>
+<script src="sepsis_report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="sepsis_report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="sepsis_report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="sepsis_report_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="sepsis_report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="sepsis_report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="sepsis_report_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Assigment8</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Luis Silva </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<div class="cell">
+
+</div>
+<section id="speed-testing" class="level2">
+<h2 class="anchored" data-anchor-id="speed-testing">Speed testing</h2>
+<p>The function makeSepsisDataset in sepsis_monitor_functions.R creates a single data file with ICU monitoring information on n randomly sampled patients by reading in the data files for these n individuals from the web. The function has two arguments:</p>
+<p>n, which determines to number of patients to read in</p>
+<p>read_fn, which specifies whether the reading of individual patient files should use the function fread or read_delim.</p>
+<p>Use the tictoc package, write some code to compare the amount of time taken to create sepsis datasets with 50, 100, and 500 patients when using fread vs.&nbsp;read_delim.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1,794 × 7
+# Groups:   PatientID [50]
+   PatientID ICULOS    HR  Temp  Resp SepsisLabel obsTime            
+   &lt;chr&gt;      &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;int&gt;       &lt;int&gt; &lt;dttm&gt;             
+ 1 000110         0    91  36.8     3           0 2023-04-08 19:19:31
+ 2 000110         1    89  36.7    15           0 2023-04-08 19:34:44
+ 3 000110         2    80  36.7    21           0 2023-04-08 20:10:56
+ 4 000110         3    81  36.4    22           0 2023-04-08 20:58:58
+ 5 000110         4    71  36.6    18           0 2023-04-08 21:23:05
+ 6 000110         5    72  36.4    12           0 2023-04-09 05:51:07
+ 7 000110         6    67  NA       7           0 2023-04-09 06:43:41
+ 8 000110         7    62  NA      12           0 2023-04-09 07:00:58
+ 9 000110         8    60  NA      11           0 2023-04-09 08:00:31
+10 000110         9    80  36.9     5           0 2023-04-09 08:01:57
+# … with 1,784 more rows</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>4.37 sec elapsed</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4,116 × 7
+# Groups:   PatientID [100]
+   PatientID ICULOS    HR  Temp  Resp SepsisLabel obsTime            
+   &lt;chr&gt;      &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;int&gt;       &lt;int&gt; &lt;dttm&gt;             
+ 1 000156         0    91  36      12           0 2023-04-08 19:19:39
+ 2 000156         1    99  36      13           0 2023-04-08 19:49:48
+ 3 000156         2   124  36.6    14           0 2023-04-08 19:53:06
+ 4 000156         3    89  36.9    12           0 2023-04-08 21:53:33
+ 5 000156         4    80  36.8    12           0 2023-04-09 01:12:19
+ 6 000156         5    80  36.7    16           0 2023-04-09 01:39:14
+ 7 000156         6    81  NA      16           0 2023-04-09 01:57:10
+ 8 000156         7    72  37.2    16           0 2023-04-09 04:11:41
+ 9 000156         8    74  37.5    16           0 2023-04-09 05:13:04
+10 000156         9    75  37.5    16           0 2023-04-09 06:02:06
+# … with 4,106 more rows</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>8.46 sec elapsed</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 8,019 × 7
+# Groups:   PatientID [200]
+   PatientID ICULOS    HR  Temp  Resp SepsisLabel obsTime            
+   &lt;chr&gt;      &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;int&gt;       &lt;int&gt; &lt;dttm&gt;             
+ 1 000050         0    97  35.9    19           0 2023-04-08 19:19:56
+ 2 000050         1    96  NA      22           0 2023-04-08 19:52:01
+ 3 000050         2    97  NA      27           0 2023-04-08 20:38:16
+ 4 000050         3    98  NA      30           0 2023-04-08 21:12:37
+ 5 000050         4   104  37.1    21           0 2023-04-08 21:13:58
+ 6 000050         5   103  NA      27           0 2023-04-08 21:19:31
+ 7 000050         6    98  NA      30           0 2023-04-08 21:44:15
+ 8 000050         7    94  NA      18           0 2023-04-08 21:51:38
+ 9 000050         8    93  NA      26           0 2023-04-09 00:25:11
+10 000050         9    NA  NA      NA           0 2023-04-09 04:38:39
+# … with 8,009 more rows</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>16.25 sec elapsed</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 19,396 × 7
+# Groups:   PatientID [500]
+   PatientID ICULOS    HR  Temp  Resp SepsisLabel obsTime            
+   &lt;chr&gt;      &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;int&gt;       &lt;int&gt; &lt;dttm&gt;             
+ 1 000011         0    81  NA      12           0 2023-04-08 19:20:36
+ 2 000011         1    82  38      12           0 2023-04-08 19:45:51
+ 3 000011         2    81  38.1    12           0 2023-04-08 20:20:14
+ 4 000011         3    82  NA      12           0 2023-04-08 21:26:03
+ 5 000011         4    84  NA      16           0 2023-04-08 21:55:15
+ 6 000011         5    84  NA      20           0 2023-04-08 23:09:11
+ 7 000011         6    85  38.2    18           0 2023-04-08 23:09:38
+ 8 000011         7    85  NA      14           0 2023-04-08 23:17:48
+ 9 000011         8    NA  NA      NA           0 2023-04-09 00:20:22
+10 000011         9    79  NA      12           0 2023-04-09 00:39:36
+# … with 19,386 more rows</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>40.89 sec elapsed</code></pre>
+</div>
+<div class="cell-output-display">
+
+<div id="iegprfwxio" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+:where(#iegprfwxio) .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: solid;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 3px;
+  border-top-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 3px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: #D3D3D3;
+}
+
+:where(#iegprfwxio) .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+:where(#iegprfwxio) .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+:where(#iegprfwxio) .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+:where(#iegprfwxio) .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+:where(#iegprfwxio) .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+:where(#iegprfwxio) .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+:where(#iegprfwxio) .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+:where(#iegprfwxio) .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+:where(#iegprfwxio) .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+:where(#iegprfwxio) .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+:where(#iegprfwxio) .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+:where(#iegprfwxio) .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+:where(#iegprfwxio) .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+:where(#iegprfwxio) .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+:where(#iegprfwxio) .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+:where(#iegprfwxio) .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+:where(#iegprfwxio) .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+:where(#iegprfwxio) .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+:where(#iegprfwxio) .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+:where(#iegprfwxio) .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+:where(#iegprfwxio) .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+:where(#iegprfwxio) .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+:where(#iegprfwxio) .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+:where(#iegprfwxio) .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+:where(#iegprfwxio) .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+:where(#iegprfwxio) .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+:where(#iegprfwxio) .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+:where(#iegprfwxio) .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+:where(#iegprfwxio) .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+:where(#iegprfwxio) .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+:where(#iegprfwxio) .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+:where(#iegprfwxio) .gt_left {
+  text-align: left;
+}
+
+:where(#iegprfwxio) .gt_center {
+  text-align: center;
+}
+
+:where(#iegprfwxio) .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+:where(#iegprfwxio) .gt_font_normal {
+  font-weight: normal;
+}
+
+:where(#iegprfwxio) .gt_font_bold {
+  font-weight: bold;
+}
+
+:where(#iegprfwxio) .gt_font_italic {
+  font-style: italic;
+}
+
+:where(#iegprfwxio) .gt_super {
+  font-size: 65%;
+}
+
+:where(#iegprfwxio) .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+:where(#iegprfwxio) .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+:where(#iegprfwxio) .gt_indent_1 {
+  text-indent: 5px;
+}
+
+:where(#iegprfwxio) .gt_indent_2 {
+  text-indent: 10px;
+}
+
+:where(#iegprfwxio) .gt_indent_3 {
+  text-indent: 15px;
+}
+
+:where(#iegprfwxio) .gt_indent_4 {
+  text-indent: 20px;
+}
+
+:where(#iegprfwxio) .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table">
+  <thead class="gt_header">
+    <tr>
+      <td colspan="2" class="gt_heading gt_title gt_font_normal" style="">Computing time of the <strong>makeSepsisDataset</strong> Function</td>
+    </tr>
+    <tr>
+      <td colspan="2" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style="">Time to fetch the described amount of patients</td>
+    </tr>
+  </thead>
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="Patients">Patients</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="seconds">seconds</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="Patients" class="gt_row gt_center">50</td>
+<td headers="seconds" class="gt_row gt_center">5.73</td></tr>
+    <tr><td headers="Patients" class="gt_row gt_center gt_striped">100</td>
+<td headers="seconds" class="gt_row gt_center gt_striped">10.28</td></tr>
+    <tr><td headers="Patients" class="gt_row gt_center">500</td>
+<td headers="seconds" class="gt_row gt_center">48.64</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  Patients seconds
+1       50    5.73
+2      100   10.28
+3      500   48.64</code></pre>
+</div>
+</div>
+</section>
+<section id="creating-the-file-in-the-cloud" class="level2">
+<h2 class="anchored" data-anchor-id="creating-the-file-in-the-cloud">Creating the file in the cloud</h2>
+<p>Now, you’re going to upload a CSV file of your sepsis dataset to Google Drive.</p>
+<p>Start by logging into your Google Drive account with your UMN credentials. Create a folder in My Drive called Sepsis (you can also make this folder somewhere else, or use an existing folder). Navigate to your folder, and click the sharing icon next to the folder name:</p>
+<p>At the bottom of the next window, change the Restricted status to Anyone with the link.</p>
+<p>Next, click Copy Link, paste it where indicated below and run the following code:</p>
+<div class="cell">
+
+</div>
+</section>
+<section id="report-starts-here" class="level2">
+<h2 class="anchored" data-anchor-id="report-starts-here">Report Starts here</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "2023-04-08 19:20:50"</code></pre>
+</div>
+</div>
+</section>
+<section id="most-recent-status-on-patients-with-sepsis" class="level2">
+<h2 class="anchored" data-anchor-id="most-recent-status-on-patients-with-sepsis">Most recent status on patients with Sepsis</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;div id="lxvcwkggxf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;"&gt;
+  &lt;style&gt;html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#lxvcwkggxf .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: solid;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 3px;
+  border-top-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 3px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 3px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 3px;
+  border-left-color: #D3D3D3;
+}
+
+#lxvcwkggxf .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lxvcwkggxf .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#lxvcwkggxf .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#lxvcwkggxf .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#lxvcwkggxf .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lxvcwkggxf .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lxvcwkggxf .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#lxvcwkggxf .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#lxvcwkggxf .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#lxvcwkggxf .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#lxvcwkggxf .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#lxvcwkggxf .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#lxvcwkggxf .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lxvcwkggxf .gt_from_md &gt; :first-child {
+  margin-top: 0;
+}
+
+#lxvcwkggxf .gt_from_md &gt; :last-child {
+  margin-bottom: 0;
+}
+
+#lxvcwkggxf .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#lxvcwkggxf .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lxvcwkggxf .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#lxvcwkggxf .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#lxvcwkggxf .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lxvcwkggxf .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#lxvcwkggxf .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#lxvcwkggxf .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lxvcwkggxf .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lxvcwkggxf .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: solid;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#lxvcwkggxf .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#lxvcwkggxf .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lxvcwkggxf .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lxvcwkggxf .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lxvcwkggxf .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: solid;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lxvcwkggxf .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lxvcwkggxf .gt_left {
+  text-align: left;
+}
+
+#lxvcwkggxf .gt_center {
+  text-align: center;
+}
+
+#lxvcwkggxf .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#lxvcwkggxf .gt_font_normal {
+  font-weight: normal;
+}
+
+#lxvcwkggxf .gt_font_bold {
+  font-weight: bold;
+}
+
+#lxvcwkggxf .gt_font_italic {
+  font-style: italic;
+}
+
+#lxvcwkggxf .gt_super {
+  font-size: 65%;
+}
+
+#lxvcwkggxf .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#lxvcwkggxf .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#lxvcwkggxf .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#lxvcwkggxf .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#lxvcwkggxf .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#lxvcwkggxf .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#lxvcwkggxf .gt_indent_5 {
+  text-indent: 25px;
+}
+&lt;/style&gt;
+  &lt;table class="gt_table"&gt;
+  &lt;thead class="gt_header"&gt;
+    &lt;tr&gt;
+      &lt;td colspan="4" class="gt_heading gt_title gt_font_normal" style&gt;Patients with Sepsis Now&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td colspan="4" class="gt_heading gt_subtitle gt_font_normal gt_bottom_border" style&gt;Last vital signs on record&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;thead class="gt_col_headings"&gt;
+    &lt;tr&gt;
+      &lt;th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="PatientID"&gt;PatientID&lt;/th&gt;
+      &lt;th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Last Heart Rate"&gt;Last Heart Rate&lt;/th&gt;
+      &lt;th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Last Temperature"&gt;Last Temperature&lt;/th&gt;
+      &lt;th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Last Respiratory Rate"&gt;Last Respiratory Rate&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody class="gt_table_body"&gt;
+    &lt;tr&gt;&lt;td headers="PatientID" class="gt_row gt_right"&gt;002067&lt;/td&gt;
+&lt;td headers="Last Heart Rate" class="gt_row gt_right"&gt;106&lt;/td&gt;
+&lt;td headers="Last Temperature" class="gt_row gt_right"&gt;NA&lt;/td&gt;
+&lt;td headers="Last Respiratory Rate" class="gt_row gt_right"&gt;24&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td headers="PatientID" class="gt_row gt_right gt_striped"&gt;002099&lt;/td&gt;
+&lt;td headers="Last Heart Rate" class="gt_row gt_right gt_striped"&gt;86&lt;/td&gt;
+&lt;td headers="Last Temperature" class="gt_row gt_right gt_striped"&gt;NA&lt;/td&gt;
+&lt;td headers="Last Respiratory Rate" class="gt_row gt_right gt_striped"&gt;11&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td headers="PatientID" class="gt_row gt_right"&gt;003061&lt;/td&gt;
+&lt;td headers="Last Heart Rate" class="gt_row gt_right"&gt;111&lt;/td&gt;
+&lt;td headers="Last Temperature" class="gt_row gt_right"&gt;37.67&lt;/td&gt;
+&lt;td headers="Last Respiratory Rate" class="gt_row gt_right"&gt;28&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td headers="PatientID" class="gt_row gt_right gt_striped"&gt;006051&lt;/td&gt;
+&lt;td headers="Last Heart Rate" class="gt_row gt_right gt_striped"&gt;89&lt;/td&gt;
+&lt;td headers="Last Temperature" class="gt_row gt_right gt_striped"&gt;NA&lt;/td&gt;
+&lt;td headers="Last Respiratory Rate" class="gt_row gt_right gt_striped"&gt;24&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td headers="PatientID" class="gt_row gt_right"&gt;007870&lt;/td&gt;
+&lt;td headers="Last Heart Rate" class="gt_row gt_right"&gt;72&lt;/td&gt;
+&lt;td headers="Last Temperature" class="gt_row gt_right"&gt;37.94&lt;/td&gt;
+&lt;td headers="Last Respiratory Rate" class="gt_row gt_right"&gt;20&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td headers="PatientID" class="gt_row gt_right gt_striped"&gt;007972&lt;/td&gt;
+&lt;td headers="Last Heart Rate" class="gt_row gt_right gt_striped"&gt;75&lt;/td&gt;
+&lt;td headers="Last Temperature" class="gt_row gt_right gt_striped"&gt;38.00&lt;/td&gt;
+&lt;td headers="Last Respiratory Rate" class="gt_row gt_right gt_striped"&gt;24&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td headers="PatientID" class="gt_row gt_right"&gt;008035&lt;/td&gt;
+&lt;td headers="Last Heart Rate" class="gt_row gt_right"&gt;103&lt;/td&gt;
+&lt;td headers="Last Temperature" class="gt_row gt_right"&gt;36.11&lt;/td&gt;
+&lt;td headers="Last Respiratory Rate" class="gt_row gt_right"&gt;18&lt;/td&gt;&lt;/tr&gt;
+    &lt;tr&gt;&lt;td headers="PatientID" class="gt_row gt_right gt_striped"&gt;009178&lt;/td&gt;
+&lt;td headers="Last Heart Rate" class="gt_row gt_right gt_striped"&gt;109&lt;/td&gt;
+&lt;td headers="Last Temperature" class="gt_row gt_right gt_striped"&gt;NA&lt;/td&gt;
+&lt;td headers="Last Respiratory Rate" class="gt_row gt_right gt_striped"&gt;23&lt;/td&gt;&lt;/tr&gt;
+  &lt;/tbody&gt;
+  
+  
+&lt;/table&gt;
+&lt;/div&gt;</code></pre>
+</div>
+</div>
+</section>
+<section id="tracking-vital-signs-of-septic-patients" class="level2">
+<h2 class="anchored" data-anchor-id="tracking-vital-signs-of-septic-patients">Tracking vital signs of septic patients</h2>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="sepsis_report_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="change-in-parameters" class="level2">
+<h2 class="anchored" data-anchor-id="change-in-parameters">Change in Parameters</h2>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="sepsis_report_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="sepsis_report_files/figure-html/unnamed-chunk-7-2.png" class="img-fluid" width="672"></p>
+</div>
+<div class="cell-output-display">
+<p><img src="sepsis_report_files/figure-html/unnamed-chunk-7-3.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
